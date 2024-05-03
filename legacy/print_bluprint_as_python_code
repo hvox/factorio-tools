@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+import clipboard
+
+from factorio.blueprints import Blueprint
+from factorio.entities import entities_to_python
+
+original_code = clipboard.paste()
+blueprint = Blueprint.decode(original_code)
+for line in entities_to_python(blueprint.entities):
+    print(line)

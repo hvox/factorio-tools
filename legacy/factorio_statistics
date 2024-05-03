@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+from collections import Counter
+
+from factorio.recipes import RECIPES
+
+
+def pipe_throughput(pipe_length: int) -> float:
+    if pipe_length < 197:
+        return 10000 / (3 * pipe_length - 1) + 1000
+    else:
+        return 240000 / (pipe_length + 39)
+
+
+def print_title(title: object):
+    print(f" {title} ".center(80, "-"))
+
+
+def main():
+    print_title("number of recipes for each number of ingridients")
+    cnt = Counter(len(r.ingredients) for r in RECIPES.values())
+    for ingredients_amount, frequency in sorted(cnt.items()):
+        print(f" {ingredients_amount}: {frequency}")
+    print_title("pipe lengths ")
+    for x in range(1, 31):
+        pipe_length = 10 * x
+        throughput = pipe_throughput(pipe_length)
+        print(f"{pipe_length:4} : {throughput}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+r"""
+This program calculates the cost of all intermediate
+technologies needed to research whatever you want.
+
+Usage:
+    print_technology_cost <technologies>...
+    print_technology_cost -h | --help
+
+Arguments:
+    technologies      Desired technologies
+
+Options:
+    -h --help      Print this help message and exit.
+"""
+from collections import defaultdict
+from difflib import get_close_matches
+from fractions import Fraction
+from sys import stderr
+
+from factorio.technologies import TECHNOLOGIES
+
+
+def main(technologies: set[str]):
+    total_cost = defaultdict(lambda: Fraction(0))
+    total_time = Fraction(0)
+    stack, processed_technologies = list(technologies), set()
+    while stack:
+        technology_name = stack.pop()
+        if technology_name in processed_technologies:
+            continue
+        processed_technologies.add(technology_name)
+        technology = TECHNOLOGIES[technology_name]
+        total_time += technology.creation_time
+        for science_pack in technology.science_packs:
+            total_cost[science_pack] += technology.cost
+        for dependency in technology.dependencies:
+            stack.append(dependency)
+    print(" science pack".ljust(26), "total amount")
+    for science_pack, amount in total_cost.items():
+        print(f" {science_pack}".ljust(26), amount)
+    print(f" + {total_time} seconds")
+
+
+if __name__ == "__main__":
+    args = __import__("docopt").docopt(__doc__)
+    technologies = set()
+    errors_encountered = False
+    for technology in args["<technologies>"]:
+        if technology not in TECHNOLOGIES:
+            guess = get_close_matches(technology, TECHNOLOGIES, 1, 0.0)[0]
+            print(f"Technology {technology!r} not found. Maybe you meant {guess!r}?", file=stderr)
+            errors_encountered = True
+            continue
+        technologies.add(technology)
+    if errors_encountered:
+        exit(1)
+    main(technologies)

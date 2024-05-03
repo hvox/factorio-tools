@@ -1,0 +1,20 @@
+technology	time per science pack	science packs	dependencies
+logistic-science-pack	5	A:75	
+steel-processing	5	A:50	
+automation	10	A:10	
+engine	15	AL:100	steel-processing, logistic-science-pack
+electronics	15	A:30	automation
+automation-2	15	AL:40	electronics, steel-processing, logistic-science-pack
+fluid-handling	15	AL:50	automation-2, engine
+oil-processing	30	AL:100	fluid-handling
+plastics	30	AL:200	oil-processing
+sulfur-processing	30	AL:150	oil-processing
+battery	30	AL:150	sulfur-processing
+advanced-electronics	15	AL:200	plastics
+chemical-science-pack	10	AL:75	advanced-electronics, sulfur-processing
+advanced-oil-processing	30	ALC:75	chemical-science-pack
+lubricant	30	ALC:50	advanced-oil-processing
+electric-engine	30	ALC:50	lubricant
+robotics	30	ALC:75	battery, electric-engine
+construction-robotics	30	ALC:100	robotics
+logistic-robotics	30	ALC:250	robotics

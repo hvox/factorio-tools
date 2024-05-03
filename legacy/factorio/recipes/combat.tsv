@@ -1,0 +1,56 @@
+produced material	required time	facility	ingredients
+artillery-shell	15	assembler	explosive-cannon-shell:4, explosives:8, radar:1
+artillery-targeting-remote	1/2	assembler	processing-unit:1, radar:1
+artillery-turret	40	assembler	advanced-circuit:20, concrete:60, iron-gear-wheel:40, steel-plate:60
+atomic-bomb	50	assembler	explosives:10, processing-unit:20, uranium-235:30
+battery-mk1	10	assembler	battery:5, steel-plate:10
+battery-mk2	10	assembler	battery-mk1:10, processing-unit:20
+cannon-shell	8	assembler	explosives:1, plastic-bar:2, steel-plate:2
+cluster-grenade	8	assembler	explosives:5, grenade:7, steel-plate:5
+combat-shotgun	10	assembler	copper-plate:10, iron-gear-wheel:5, steel-plate:15, wood:10
+defender-capsule	8	assembler	electronic-circuit:2, iron-gear-wheel:3, piercing-rounds-magazine:1
+destroyer-capsule	15	assembler	distractor-capsule:4, speed-module:1
+discharge-defense	10	assembler	laser-turret:10, processing-unit:5, steel-plate:20
+discharge-defense-remote	1/2	assembler	electronic-circuit:1
+distractor-capsule	15	assembler	advanced-circuit:3, defender-capsule:4
+energy-shield	10	assembler	advanced-circuit:5, steel-plate:10
+energy-shield-mk2	10	assembler	energy-shield:10, processing-unit:10
+exoskeleton	10	assembler	electric-engine-unit:30, processing-unit:10, steel-plate:20
+explosive-cannon-shell	8	assembler	explosives:2, plastic-bar:2, steel-plate:2
+explosive-rocket	8	assembler	explosives:2, rocket:1
+explosive-uranium-cannon-shell	12	assembler	explosive-cannon-shell:1, uranium-238:1
+firearm-magazine	1	assembler	iron-plate:4
+flamethrower	10	assembler	iron-gear-wheel:10, steel-plate:5
+flamethrower-ammo	6	assembler	heavy-oil:50, light-oil:50, steel-plate:5
+flamethrower-turret	20	assembler	engine-unit:5, iron-gear-wheel:15, pipe:10, steel-plate:30
+gate	1/2	assembler	electronic-circuit:2, steel-plate:2, stone-wall:1
+grenade	8	assembler	coal:10, iron-plate:5
+gun-turret	8	assembler	copper-plate:10, iron-gear-wheel:10, iron-plate:20
+heavy-armor	8	assembler	copper-plate:100, steel-plate:50
+land-mine	5/4	assembler	explosives:1/2, steel-plate:1/4
+laser-turret	20	assembler	battery:12, electronic-circuit:20, steel-plate:20
+light-armor	3	assembler	iron-plate:40
+modular-armor	15	assembler	advanced-circuit:30, steel-plate:50
+nightvision	10	assembler	advanced-circuit:5, steel-plate:10
+personal-laser-defense	10	assembler	laser-turret:5, processing-unit:1, steel-plate:5
+personal-roboport	10	assembler	advanced-circuit:10, battery:45, iron-gear-wheel:40, steel-plate:20
+personal-roboport-mk2	20	assembler	personal-roboport:5, processing-unit:100
+piercing-rounds-magazine	3	assembler	copper-plate:5, firearm-magazine:1, steel-plate:1
+piercing-shotgun-shells	8	assembler	copper-plate:5, shotgun-shells:2, steel-plate:2
+pistol	5	assembler	copper-plate:5, iron-plate:5
+poison-capsule	8	assembler	coal:10, electronic-circuit:3, steel-plate:3
+portable-fusion-reactor	10	assembler	processing-unit:250
+portable-solar-panel	10	assembler	advanced-circuit:1, solar-panel:5, steel-plate:5
+power-armor	20	assembler	electric-engine-unit:20, processing-unit:40, steel-plate:40
+power-armor-mk2	25	assembler	effectivity-module-3:5, processing-unit:40, speed-module-3:5, steel-plate:40
+radar	1/2	assembler	electronic-circuit:5, iron-gear-wheel:5, iron-plate:10
+rocket	8	assembler	electronic-circuit:1, explosives:1, iron-plate:2
+rocket-launcher	10	assembler	electronic-circuit:5, iron-gear-wheel:5, iron-plate:5
+rocket-silo	30	assembler	concrete:1000, electric-engine-unit:200, pipe:100, processing-unit:200, steel-plate:1000
+shotgun	10	assembler	copper-plate:10, iron-gear-wheel:5, iron-plate:15, wood:5
+shotgun-shells	3	assembler	copper-plate:2, iron-plate:2
+slowdown-capsule	8	assembler	coal:5, electronic-circuit:2, steel-plate:2
+stone-wall	1/2	assembler	stone-brick:5
+submachine-gun	10	assembler	copper-plate:5, iron-gear-wheel:10, iron-plate:10
+uranium-cannon-shell	12	assembler	cannon-shell:1, uranium-238:1
+uranium-rounds-magazine	10	assembler	piercing-rounds-magazine:1, uranium-238:1

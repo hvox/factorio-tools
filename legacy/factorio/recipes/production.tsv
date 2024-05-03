@@ -1,0 +1,34 @@
+produced material	required time	facility	ingredients
+accumulator	10	assembler	battery:5, iron-plate:2
+assembling-machine-1	1/2	assembler	electronic-circuit:3, iron-gear-wheel:5, iron-plate:9
+assembling-machine-2	1/2	assembler	assembling-machine-1:1, electronic-circuit:3, iron-gear-wheel:5, steel-plate:2
+assembling-machine-3	1/2	assembler	assembling-machine-2:2, speed-module:4
+boiler	1/2	assembler	pipe:4, stone-furnace:1
+burner-mining-drill	4	assembler	iron-gear-wheel:3, iron-plate:3, stone-furnace:1
+centrifuge	4	assembler	advanced-circuit:100, concrete:100, iron-gear-wheel:100, steel-plate:50
+chemical-plant	5	assembler	electronic-circuit:5, iron-gear-wheel:5, pipe:5, steel-plate:5
+effectivity-module	15	assembler	advanced-circuit:5, electronic-circuit:5
+effectivity-module-2	30	assembler	advanced-circuit:5, effectivity-module:4, processing-unit:5
+effectivity-module-3	60	assembler	advanced-circuit:5, effectivity-module-2:5, processing-unit:5
+electric-furnace	5	assembler	advanced-circuit:5, steel-plate:10, stone-brick:10
+electric-mining-drill	2	assembler	electronic-circuit:3, iron-gear-wheel:5, iron-plate:10
+heat-exchanger	3	assembler	copper-plate:100, pipe:10, steel-plate:10
+heat-pipe	1	assembler	copper-plate:20, steel-plate:10
+lab	2	assembler	electronic-circuit:10, iron-gear-wheel:10, transport-belt:4
+nuclear-reactor	8	assembler	advanced-circuit:500, concrete:500, copper-plate:500, steel-plate:500
+offshore-pump	1/2	assembler	electronic-circuit:2, iron-gear-wheel:1, pipe:1
+oil-refinery	8	assembler	electronic-circuit:10, iron-gear-wheel:10, pipe:10, steel-plate:15, stone-brick:10
+productivity-module	15	assembler	advanced-circuit:5, electronic-circuit:5
+productivity-module-2	30	assembler	advanced-circuit:5, processing-unit:5, productivity-module:4
+productivity-module-3	60	assembler	advanced-circuit:5, processing-unit:5, productivity-module-2:5
+pumpjack	5	assembler	electronic-circuit:5, iron-gear-wheel:10, pipe:10, steel-plate:5
+repair-pack	1/2	assembler	electronic-circuit:2, iron-gear-wheel:2
+solar-panel	10	assembler	copper-plate:5, electronic-circuit:15, steel-plate:5
+speed-module	15	assembler	advanced-circuit:5, electronic-circuit:5
+speed-module-2	30	assembler	advanced-circuit:5, processing-unit:5, speed-module:4
+speed-module-3	60	assembler	advanced-circuit:5, processing-unit:5, speed-module-2:5
+steam-engine	1/2	assembler	iron-gear-wheel:8, iron-plate:10, pipe:5
+steam-turbine	3	assembler	copper-plate:50, iron-gear-wheel:50, pipe:20
+steel-axe	1/2	assembler	iron-stick:2, steel-plate:5
+steel-furnace	3	assembler	steel-plate:6, stone-brick:10
+stone-furnace	1/2	assembler	stone:5

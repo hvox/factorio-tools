@@ -1,0 +1,152 @@
+#!/usr/bin/env python3
+import base64
+import json
+import zlib
+from itertools import product
+from math import atan2, dist, tau, trunc
+from random import randint
+
+import clipboard
+
+LAMP = "<>"
+POLE = "##"
+NONE = "  "
+
+w, h, max_value = 34, 34, 60 * 1000
+
+
+def pair(x, y):
+    return tuple(sorted((x, y)))
+
+
+def cell(x: int, y: int):
+    return grid[y][x] if 0 <= y < h and 0 <= x < w else NONE
+
+
+def new_id():
+    if not hasattr(new_id, "counter"):
+        new_id.counter = 0
+    new_id.counter += 1
+    return new_id.counter
+
+
+def horisontal_progressbar(x: int, y: int):
+    lim = (x + 1) * max_value // w
+    delta = trunc(1 / w * max_value - 1e-9)
+    return max(1, min(max_value, lim + randint(0, delta)))
+
+
+def vertical_progressbar(x: int, y: int):
+    lim = (h - y) * max_value // h
+    delta = trunc(1 / h * max_value - 1e-9)
+    return max(1, min(max_value, lim + randint(0, delta)))
+
+
+def circular_progressbar(x: int, y: int):
+    center = ((w - 1) / 2, (h - 1) / 2)
+    dst = dist((x, y), center)
+    if min(w, h) / 6 <= dst <= max(w, h) / 2:
+        lim = round((atan2(y - center[1], x - center[0]) + tau / 4) % tau / tau * max_value)
+        return max(1, min(max_value, lim))
+
+
+progressbar = circular_progressbar
+
+grid = [[LAMP if progressbar(x, y) is not None else NONE for x in range(w)] for y in range(h)]
+if w > 16 and h > 16 and False:
+    for x in range(w // 2 - 1, w // 2 + 1):
+        for y in range(w // 2 - 1, w // 2 + 1):
+            grid[y][x] = POLE
+# print("\n".join("".join(line) for line in grid))
+
+connections = set()
+for x, y1 in product(range(w), range(h)):
+    if cell(x, y1) != LAMP:
+        continue
+    y2 = next(iter([y for y in range(y1 + 1, h) if cell(x, y) == LAMP] + [-1]))
+    connections.add(pair((x, y1), (x, y2)))
+
+for x in range(w - 1):
+    y1 = max((y for y in range(h) if cell(x, y) == LAMP), default=-1)
+    y2 = max((y for y in range(h) if cell(x + 1, y) == LAMP), default=-1)
+    connections.add(pair((x, y1), (x + 1, y2)))
+
+entities = {
+    (x, y): {
+        "entity_number": new_id(),
+        "name": "small-lamp",
+        "position": {"x": x + 0.5, "y": y + 0.5},
+        "connections": {"1": {"green": []}},
+    }
+    for x, y in product(range(w), range(h))
+    if cell(x, y) == LAMP
+}
+for (x, y), entity in entities.items():
+    entity["control_behavior"] = {
+        "circuit_condition": {
+            "first_signal": {"type": "virtual", "name": "signal-anything"},
+            "constant": trunc(progressbar(x, y)),
+            "comparator": ">=",
+        }
+    }
+for p1, p2 in connections:
+    if p1 not in entities or p2 not in entities:
+        continue
+    entities[p1]["connections"]["1"]["green"].append({"entity_id": entities[p2]["entity_number"]})
+    entities[p2]["connections"]["1"]["green"].append({"entity_id": entities[p1]["entity_number"]})
+
+blueprint = {
+    "blueprint": {
+        "snap-to-grid": {"x": w, "y": h},
+        "icons": [{"signal": {"type": "item", "name": "small-lamp"}, "index": 1}],
+        "entities": [entity for entity in entities.values()],
+        "item": "blueprint",
+    }
+}
+
+encoded = "0" + base64.b64encode(zlib.compress(json.dumps(blueprint).encode(), 9)).decode()
+clipboard.copy(encoded)
+print(encoded)
+
+
+{
+    "blueprint": {
+        "snap-to-grid": {"x": 2, "y": 2},
+        "icons": [{"signal": {"type": "item", "name": "small-lamp"}, "index": 1}],
+        "entities": [
+            {
+                "entity_number": 1,
+                "name": "small-lamp",
+                "position": {"x": 0.5, "y": 1.5},
+                "control_behavior": {
+                    "circuit_condition": {
+                        "first_signal": {"type": "virtual", "name": "signal-anything"},
+                        "constant": 5,
+                        "comparator": ">",
+                    }
+                },
+                "connections": {"1": {"green": [{"entity_id": 2}, {"entity_id": 3}]}},
+            },
+            {
+                "entity_number": 2,
+                "name": "small-lamp",
+                "position": {"x": 0.5, "y": 0.5},
+                "connections": {"1": {"green": [{"entity_id": 1}]}},
+            },
+            {
+                "entity_number": 3,
+                "name": "small-lamp",
+                "position": {"x": 1.5, "y": 1.5},
+                "connections": {"1": {"green": [{"entity_id": 1}, {"entity_id": 4}]}},
+            },
+            {
+                "entity_number": 4,
+                "name": "small-lamp",
+                "position": {"x": 1.5, "y": 0.5},
+                "connections": {"1": {"green": [{"entity_id": 3}]}},
+            },
+        ],
+        "item": "blueprint",
+        "version": 281479277379584,
+    }
+}

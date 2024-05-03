@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+"""
+Generate materials.tsv
+
+Usage: {script} [options]
+
+Options:
+    -h, --help
+        Show this screen and exit.
+
+    --verbose
+        Raise verbosity level.
+"""
+import sys
+from contextlib import suppress
+from fractions import Fraction
+from pathlib import Path
+from typing import NamedTuple
+
+from slpp import slpp as lua
+
+RECIPES_LUA = ".steam/steam/steamapps/common/Factorio/data/base/prototypes/recipe.lua"
+CATEGORIES = {
+    "advanced-crafting",
+    "centrifuging",
+    "chemistry",
+    "crafting",
+    "crafting-with-fluid",
+    "handmade",
+    "oil-processing",
+    "rocket-building",
+    "smelting",
+}
+
+
+class Material(NamedTuple):
+    name: str
+    time: Fraction
+    ingredients: dict[str, Fraction]
+
+    def __str__(self):
+        return self.name + "(" + ", ".join(f"{k}:{v}" for k, v in self.ingredients.items()) + ")"
+
+    def to_tsv_row(self):
+        ingredients = ", ".join(f"{k}:{v}" for k, v in self.ingredients.items())
+        return self.name + "\t" + str(self.time) + "\t" + ingredients
+
+    @staticmethod
+    def from_tsv_row(row: str):
+        name, time, ingredients_str = row.split("\t")
+        ingredients = {k: Fraction(v) for k, v in (s.split(":") for s in ingredients_str.split(", "))}
+        return Material(name, Fraction(time), ingredients)
+
+
+def parse_recipes(path: Path) -> dict[str, Material]:
+    recipes_lua = path.read_text().removeprefix("data:extend(\n").removesuffix(")\n")
+    recipes = {}
+    for i, obj in enumerate(lua.decode(recipes_lua)):
+        debug(i, obj)
+        recipe_name = obj["name"]
+        obj = obj.get("normal", obj)
+        time = Fraction(str(obj.get("energy_required", 0.5)))
+        ingredients = {name: Fraction(str(amount)) for name, amount in map(parse_material, obj["ingredients"])}
+        if "result" in obj:
+            name = obj["result"]
+            count = obj.get("result_count", 1)
+        else:
+            results = obj["results"]
+            if len(results) != 1:
+                warn(f"Ignoring {recipe_name} because {results=}")
+                continue
+            name, count = parse_material(results[0])
+        time /= count
+        ingredients = {name: x / count for name, x in ingredients.items()}
+        recipes.setdefault(name, Material(name, time, ingredients))
+    return recipes
+
+
+def parse_material(obj):
+    return (obj["name"], obj["amount"]) if isinstance(obj, dict) else obj
+
+
+def main(script_name: str, *script_args: str):
+    doc = __doc__.format(script=Path(script_name).name)
+    args = __import__("docopt").docopt(doc, script_args)
+    setattr(debug, "enabled", args["--verbose"])
+    debug(f"Running with arguments {dict(args)!r}")
+    recipes_path = Path.home() / RECIPES_LUA
+    debug(f"{recipes_path = }")
+    recipes = parse_recipes(recipes_path)
+    if "space-science-pack" not in recipes:
+        warn("Failed to find space-science-pack!")
+        recipes["space-science-pack"] = Material(
+            "space-science-pack",
+            (Fraction("41.25") + 100 * 3) / 1000,
+            {"rocket-part": Fraction(1, 10), "satellite": Fraction(1, 1000)},
+        )
+    tsv = "material\ttime\tingridients\n"
+    tsv += "".join(recipe.to_tsv_row() + "\n" for recipe in sorted(recipes.values()))
+    (Path(__file__).resolve().parent / "materials.tsv").write_text(tsv)
+
+
+def debug(*objects: object, sep: str = " "):
+    if getattr(debug, "enabled", False):
+        prefix = "\x1b[94m" * sys.stdout.isatty()
+        suffix = "\x1b[0m" * sys.stdout.isatty()
+        print(prefix + sep.join(map(str, objects)) + suffix)
+
+
+def warn(message, file=sys.stderr):
+    prefix = "\x1b[93m" * file.isatty()
+    suffix = "\x1b[0m" * file.isatty()
+    print(prefix + message + suffix, file=file)
+
+
+if __name__ == "__main__":
+    with suppress(KeyboardInterrupt):
+        main(sys.argv[0], *sys.argv[1:])

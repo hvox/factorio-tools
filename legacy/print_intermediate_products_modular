@@ -1,0 +1,204 @@
+#!/usr/bin/env python3
+r"""
+This program calculates the amount of all intermediate
+products needed to produce the end products you want.
+
+Usage:
+    print_intermediate_products [options] <materials>...
+    print_intermediate_products -h | --help
+
+Arguments:
+    materials      Desired end products in format "name:amount",
+                   where amount is per minute.
+
+Options:
+    --use-beacons  Use cool productivity modules and beacons.
+    -h --help      Print this help message and exit.
+"""
+from collections import defaultdict
+from difflib import get_close_matches
+from fractions import Fraction
+from math import ceil, trunc
+from os import environ, get_terminal_size
+from sys import stderr
+
+from factorio.calculator import MODULES_PER_FACILITY, get_total
+from factorio.recipes import FLUIDS, INTERMEDIATE, MATERIALS, RECIPES
+
+TICKS_PER_SECOND = Fraction("60")
+FACILITIES = {
+    "assembler": Fraction("0.75"),
+    "furnace": Fraction("2"),
+    "chemical plant": Fraction("1"),
+    "rocket silo": Fraction(1000 / ((3684 - 1250) / TICKS_PER_SECOND + 300)),
+    # "rocket silo": Fraction("1")
+}
+FACILITIES_WITH_MODULES = {
+    "assembler": Fraction("5.5"),
+    "furnace": Fraction("9.4"),
+    "chemical plant": Fraction("1"),
+    "rocket silo": Fraction("1"),
+}
+IGNORED_FACILITIES = set(environ.get("IGNORED_FACILITIES", "chemical plant, furnace").split(", ")) or set()
+ALIASES = {
+    "science-packs-4": [
+        ("science-pack-1", 1),
+        ("science-pack-2", 1),
+        ("military-science-pack", 1),
+        ("science-pack-3", 1),
+    ],
+    "science-packs": [
+        ("science-pack-1", 1),
+        ("science-pack-2", 1),
+        ("military-science-pack", 1),
+        ("science-pack-3", 1),
+        ("production-science-pack", 1),
+        ("utility-science-pack", 1),
+        ("space-science-pack", 1),
+    ],
+    "drone-research": [
+        ("science-pack-1", 1580),
+        ("science-pack-2", 1415),
+        ("science-pack-3", 350),
+    ],
+    "rocket-silo-research": [
+        ("science-pack-1", 5750),
+        ("science-pack-2", 5565),
+        ("science-pack-3", 3650),
+        ("production-science-pack", 1600),
+        ("utility-science-pack", 1300),
+    ],
+    "roboport-chunk": [
+        ("radar", 1),
+        ("roboport", 1),
+        ("big-electric-pole", 3),
+        ("construction-robot", 50),
+        ("logistic-chest-storage", 1),
+        ("logistic-chest-passive-provider", 1),
+    ],
+    "factory-chunk": [
+        ("assembling-machine-2", 10),
+        ("small-electric-pole", 12),  # ("substation", 1),
+        ("splitter", 4),
+        ("transport-belt", 60),
+        ("underground-belt", 4),
+        ("fast-splitter", 1),
+        ("fast-transport-belt", 60),
+        ("fast-underground-belt", 2),
+        ("fast-inserter", 20),
+        ("long-handed-inserter", 10),
+        ("pipe-to-ground", 10),
+        ("pipe", 22),
+    ],
+    "one-line-beacon-chunk": [
+        ("beacon", 2),
+        ("speed-module-3", 4),
+        ("assembling-machine-3", 1),
+        ("productivity-module-3", 4),
+    ],
+    "beacon-chunk": [
+        ("beacon", 12),
+        ("roboport", 1),
+        ("substation", 1),
+        ("speed-module-3", 24),
+        ("assembling-machine-3", 10),
+        ("productivity-module-3", 40),
+    ],
+}
+
+
+def main(*products: dict[str, Fraction], use_beacons: bool = True):
+    source_materials = {"electronic-circut", "advanced-circut", "processing-unit"} - set(products)
+    total = get_total(*products, ignored_facilities=IGNORED_FACILITIES, use_beacons=use_beacons)
+    print(" material".ljust(26), "IPM        belts/tubes")
+    try:
+        terminal_width, _ = get_terminal_size()
+    except OSError:
+        terminal_width = 224
+    for material, amount in total.items():
+        belts_or_tubes = amount / (60000 if material in FLUIDS else 900)
+        if (
+            (recipe := RECIPES.get(material))
+            and material not in source_materials
+            and recipe.facility not in IGNORED_FACILITIES
+        ):
+            notes, x_coef = "", amount
+            if use_beacons and material in INTERMEDIATE:
+                notes = "[BEACONED] "
+                x_coef /= 1 + 0.1 * MODULES_PER_FACILITY[recipe.facility]
+            facilities = (
+                x_coef
+                * recipe.creation_time
+                / 60
+                / ((FACILITIES_WITH_MODULES if use_beacons else FACILITIES)[recipe.facility])
+            )
+            notes += f"{ceil(facilities * 10) / 10} {recipe.facility}s".ljust(20)
+            ingredients = [
+                (mat, x * x_coef / (60000 if mat in FLUIDS else 900)) for mat, x in recipe.ingredients.items()
+            ]
+            notes += " <- " + ", ".join(f"{mat}:{ceil(x * 100) / 100}" for mat, x in ingredients)
+            if 47 + len(notes) > terminal_width:
+                notes = notes[: terminal_width - 50] + "..."
+        else:
+            notes = "source material"
+        print(
+            f" {material} ".ljust(26, "-"),
+            f"{ceil(amount * 1000) / 1000} ".ljust(10, "-"),
+            f"{ceil(belts_or_tubes * 100) / 100:0.2f} <".ljust(8, "-"),
+            str(notes),
+        )
+
+
+def parse_fraction(string: str) -> Fraction:
+    result = Fraction(1)
+    while "/" in string:
+        string, denumerator = string.rsplit("/", 1)
+        result /= Fraction(denumerator)
+    return result * Fraction(string)
+
+
+def find_optimal_amount(material: str, use_beacons: bool = False) -> Fraction:
+    x1, x2 = 0, 1e5
+    while x2 - x1 > 1e-5:
+        x_avg = (x1 + x2) / 2
+        total = get_total({material: x_avg}, ignored_facilities=IGNORED_FACILITIES, use_beacons=use_beacons)
+        if max(x / (60000 if mat in FLUIDS else 900) for mat, x in total.items()) <= 0.5:
+            x1 = x_avg
+        else:
+            x2 = x_avg
+    return Fraction(trunc(x1 * 1e5), 10**5)
+
+
+if __name__ == "__main__":
+    args = __import__("docopt").docopt(__doc__)
+    products = [defaultdict(lambda: Fraction(0))]
+    errors_encountered = False
+    for material_description in args["<materials>"]:
+        if material_description == "OR":
+            products.append(defaultdict(lambda: Fraction(0)))
+            continue
+        try:
+            material, amount_str = material_description.split(":", 1)
+            amount = parse_fraction(amount_str)
+        except ValueError:
+            if material_description not in MATERIALS:
+                msg = f'Argument {material_description!r} does not follow the format "name:amount".'
+                print(msg, file=stderr)
+                errors_encountered = True
+                continue
+            material_description in MATERIALS
+            material = material_description
+            amount = find_optimal_amount(material, bool(args["--use-beacons"]))
+        if material in MATERIALS:
+            products[-1][material] += amount
+        elif (materials := ALIASES.get(material)) is not None:  # lua whould handle that better
+            for material, material_amount in materials:
+                products[-1][material] += amount * material_amount
+        else:
+            guess = get_close_matches(material, list(MATERIALS) + list(ALIASES), 1, 0.0)[0]
+            print(f"Material {material!r} not found. Maybe you meant {guess!r}?", file=stderr)
+            errors_encountered = True
+            continue
+    if errors_encountered:
+        exit(1)
+    main(*products, use_beacons=bool(args["--use-beacons"]))

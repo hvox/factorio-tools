@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+from fractions import Fraction
+from sys import stderr
+
+import clipboard
+
+from factorio.blueprints import Blueprint
+from factorio.entities import ENTITIES
+from factorio.recipes import RECIPES
+
+TOOLKIT = {
+    "big-electric-pole", "filter-inserter", "inserter",
+    "pipe", "pipe-to-ground", "small-electric-pole",
+    "transport-belt", "underground-belt",
+}
+
+
+blueprint = Blueprint.decode(clipboard.paste())
+errors: set[str] = set()
+print(" ingridients ".center(80, "-"))
+cost: dict[str, Fraction] = {}
+for entity_info in blueprint.entities.values():
+    entity = entity_info[0]
+    if entity not in ENTITIES:
+        error = f"ERROR: {entity!r} is not found in entities.tsv"
+        if error not in errors:
+            print(error, file=stderr)
+            errors.add(error)
+        continue
+    if entity in TOOLKIT:
+        cost[entity] = cost.get(entity, Fraction(0)) + 1
+        continue
+    for material, amount in entity_info[1].get("items", {}).items():
+        if material in cost:
+            cost[material] += amount
+        else:
+            cost[material] = amount
+    for material, amount in RECIPES[entity].ingredients.items():
+        if material in cost:
+            cost[material] += amount
+        else:
+            cost[material] = amount
+name_lenght = max(map(len, cost.keys()))
+for amount, material in reversed(sorted((x, m) for m, x in cost.items())):
+    chests = float(amount / (48 * 100))
+    print(f" {material:{name_lenght}} : {str(amount):3} = {chests:0.4f} chests")
+
+print(" raw cost ".center(80, "-"))
+raw_cost: dict[str, Fraction] = {}
+while cost:
+    material, amount = cost.popitem()
+    if material not in RECIPES:
+        raw_cost[material] = raw_cost.get(material, Fraction(0)) + amount
+        continue
+    for ingr, ingridient_amount in RECIPES[material].ingredients.items():
+        cost[ingr] = cost.get(ingr, Fraction(0)) + amount * ingridient_amount
+name_lenght = max(map(len, raw_cost.keys()))
+for amount, material in reversed(sorted((x, m) for m, x in raw_cost.items())):
+    chests = float(amount / (48 * 100))
+    print(f" {material:{name_lenght}} : {str(amount):3} = {chests:0.4f} chests")

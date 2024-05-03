@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+import clipboard
+
+from factorio.blueprints import Blueprint
+from factorio.spaghetti_generators import electric_pole_management
+
+original_code = clipboard.paste()
+blueprint = Blueprint.decode(original_code)
+print(blueprint)
+electric_pole_management.merge_electric_poles_into_grid(blueprint.entities)
+new_code = blueprint.encode()
+print(f"old code: {len(original_code)} characters")
+print(f"new code: {len(new_code)} characters")
+clipboard.copy(new_code)
+print("New code has been copied to your clipboard")

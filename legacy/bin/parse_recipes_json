@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+from fractions import Fraction
+from json import loads as parse_json
+from pathlib import Path
+from sys import argv
+from typing import Any
+
+CATEGORIES = ["Logistics", "Production", "Combat", "Intermediate product"]
+
+
+recipes: Any = {category: {} for category in CATEGORIES}
+for material_info in parse_json(Path(argv[1]).read_text()):
+    material, category = material_info["id"], material_info["category"]
+    if category not in CATEGORIES:
+        continue
+    yield_amount = Fraction(material_info["recipe"]["yield"] or 0)
+    if not yield_amount:
+        continue
+    time = Fraction(material_info["recipe"]["time"]) / yield_amount
+    ingridients = {}
+    for ingirident_info in material_info["recipe"]["ingredients"]:
+        ingridient = ingirident_info["id"]
+        amount = Fraction(ingirident_info["amount"])
+        ingridients[ingridient] = amount / yield_amount
+    recipes[category][material] = (time, ingridients)
+
+for category, category_recipes in recipes.items():
+    print(f" {category} ".center(80, "="))
+    for material, (time, ingridients) in sorted(category_recipes.items()):
+        ings = ", ".join(f"{mat}:{x}" for mat, x in sorted(ingridients.items()))
+        print(f"{material}\t{time}\t{ings}")

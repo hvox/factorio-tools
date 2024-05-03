@@ -1,0 +1,193 @@
+material	time	ingridients
+accumulator	10	iron-plate:2, battery:5
+advanced-circuit	6	electronic-circuit:2, plastic-bar:2, copper-cable:4
+arithmetic-combinator	1/2	copper-cable:5, electronic-circuit:5
+artillery-shell	15	explosive-cannon-shell:4, radar:1, explosives:8
+artillery-targeting-remote	1/2	processing-unit:1, radar:1
+artillery-turret	40	steel-plate:60, concrete:60, iron-gear-wheel:40, advanced-circuit:20
+artillery-wagon	4	engine-unit:64, iron-gear-wheel:10, steel-plate:40, pipe:16, advanced-circuit:20
+assembling-machine-1	1/2	electronic-circuit:3, iron-gear-wheel:5, iron-plate:9
+assembling-machine-2	1/2	steel-plate:2, electronic-circuit:3, iron-gear-wheel:5, assembling-machine-1:1
+assembling-machine-3	1/2	speed-module:4, assembling-machine-2:2
+atomic-bomb	50	rocket-control-unit:10, explosives:10, uranium-235:30
+automation-science-pack	5	copper-plate:1, iron-gear-wheel:1
+battery	4	sulfuric-acid:20, iron-plate:1, copper-plate:1
+battery-equipment	10	battery:5, steel-plate:10
+battery-mk2-equipment	10	battery-equipment:10, processing-unit:15, low-density-structure:5
+beacon	15	electronic-circuit:20, advanced-circuit:20, steel-plate:10, copper-cable:10
+belt-immunity-equipment	10	advanced-circuit:5, steel-plate:10
+big-electric-pole	1/2	iron-stick:8, steel-plate:5, copper-plate:5
+boiler	1/2	stone-furnace:1, pipe:4
+burner-inserter	1/2	iron-plate:1, iron-gear-wheel:1
+burner-mining-drill	2	iron-gear-wheel:3, stone-furnace:1, iron-plate:3
+cannon-shell	8	steel-plate:2, plastic-bar:2, explosives:1
+car	2	engine-unit:8, iron-plate:20, steel-plate:5
+cargo-wagon	1	iron-gear-wheel:10, iron-plate:20, steel-plate:20
+centrifuge	4	concrete:100, steel-plate:50, advanced-circuit:100, iron-gear-wheel:100
+chemical-plant	5	steel-plate:5, iron-gear-wheel:5, electronic-circuit:5, pipe:5
+chemical-science-pack	12	engine-unit:1, advanced-circuit:3/2, sulfur:1/2
+cliff-explosives	8	explosives:10, grenade:1, empty-barrel:1
+cluster-grenade	8	grenade:7, explosives:5, steel-plate:5
+combat-shotgun	10	steel-plate:15, iron-gear-wheel:5, copper-plate:10, wood:10
+concrete	1	stone-brick:1/2, iron-ore:1/10, water:10
+constant-combinator	1/2	copper-cable:5, electronic-circuit:2
+construction-robot	1/2	flying-robot-frame:1, electronic-circuit:2
+copper-cable	1/4	copper-plate:1/2
+copper-plate	16/5	copper-ore:1
+decider-combinator	1/2	copper-cable:5, electronic-circuit:5
+defender-capsule	8	piercing-rounds-magazine:3, electronic-circuit:3, iron-gear-wheel:3
+destroyer-capsule	15	distractor-capsule:4, speed-module:1
+discharge-defense-equipment	10	processing-unit:5, steel-plate:20, laser-turret:10
+discharge-defense-remote	1/2	electronic-circuit:1
+distractor-capsule	15	defender-capsule:4, advanced-circuit:3
+effectivity-module	15	advanced-circuit:5, electronic-circuit:5
+effectivity-module-2	30	effectivity-module:4, advanced-circuit:5, processing-unit:5
+effectivity-module-3	60	effectivity-module-2:5, advanced-circuit:5, processing-unit:5
+electric-energy-interface	1/2	iron-plate:2, electronic-circuit:5
+electric-engine-unit	10	engine-unit:1, lubricant:15, electronic-circuit:2
+electric-furnace	5	steel-plate:10, advanced-circuit:5, stone-brick:10
+electric-mining-drill	2	electronic-circuit:3, iron-gear-wheel:5, iron-plate:10
+electronic-circuit	1/2	iron-plate:1, copper-cable:3
+empty-barrel	1	steel-plate:1
+energy-shield-equipment	10	advanced-circuit:5, steel-plate:10
+energy-shield-mk2-equipment	10	energy-shield-equipment:10, processing-unit:5, low-density-structure:5
+engine-unit	10	steel-plate:1, iron-gear-wheel:1, pipe:2
+exoskeleton-equipment	10	processing-unit:10, electric-engine-unit:30, steel-plate:20
+explosive-cannon-shell	8	steel-plate:2, plastic-bar:2, explosives:2
+explosive-rocket	8	rocket:1, explosives:2
+explosive-uranium-cannon-shell	12	explosive-cannon-shell:1, uranium-238:1
+explosives	2	sulfur:1/2, coal:1/2, water:5
+express-loader	10	express-transport-belt:5, fast-loader:1
+express-splitter	2	fast-splitter:1, iron-gear-wheel:10, advanced-circuit:10, lubricant:80
+express-transport-belt	1/2	iron-gear-wheel:10, fast-transport-belt:1, lubricant:20
+express-underground-belt	1	iron-gear-wheel:40, fast-underground-belt:1, lubricant:20
+fast-inserter	1/2	electronic-circuit:2, iron-plate:2, inserter:1
+fast-loader	3	fast-transport-belt:5, loader:1
+fast-splitter	2	splitter:1, iron-gear-wheel:10, electronic-circuit:10
+fast-transport-belt	1/2	iron-gear-wheel:5, transport-belt:1
+fast-underground-belt	1	iron-gear-wheel:20, underground-belt:1
+filter-inserter	1/2	fast-inserter:1, electronic-circuit:4
+firearm-magazine	1	iron-plate:4
+flamethrower	10	steel-plate:5, iron-gear-wheel:10
+flamethrower-ammo	6	steel-plate:5, crude-oil:100
+flamethrower-turret	20	steel-plate:30, iron-gear-wheel:15, pipe:10, engine-unit:5
+fluid-wagon	3/2	iron-gear-wheel:10, steel-plate:16, pipe:8, storage-tank:1
+flying-robot-frame	20	electric-engine-unit:1, battery:2, steel-plate:1, electronic-circuit:3
+fusion-reactor-equipment	10	processing-unit:200, low-density-structure:50
+gate	1/2	stone-wall:1, steel-plate:2, electronic-circuit:2
+green-wire	1/2	electronic-circuit:1, copper-cable:1
+grenade	8	iron-plate:5, coal:10
+gun-turret	8	iron-gear-wheel:10, copper-plate:10, iron-plate:20
+hazard-concrete	1/40	concrete:1
+heat-exchanger	3	steel-plate:10, copper-plate:100, pipe:10
+heat-pipe	1	steel-plate:10, copper-plate:20
+heavy-armor	8	copper-plate:100, steel-plate:50
+inserter	1/2	electronic-circuit:1, iron-gear-wheel:1, iron-plate:1
+iron-chest	1/2	iron-plate:8
+iron-gear-wheel	1/2	iron-plate:2
+iron-plate	16/5	iron-ore:1
+iron-stick	1/4	iron-plate:1/2
+lab	2	electronic-circuit:10, iron-gear-wheel:10, transport-belt:4
+land-mine	5/4	steel-plate:1/4, explosives:1/2
+landfill	1/2	stone:20
+laser-turret	20	steel-plate:20, electronic-circuit:20, battery:12
+light-armor	3	iron-plate:40
+light-oil	1/15	water:1, heavy-oil:4/3
+loader	1	inserter:5, electronic-circuit:5, iron-gear-wheel:5, iron-plate:5, transport-belt:5
+locomotive	4	engine-unit:20, electronic-circuit:10, steel-plate:30
+logistic-chest-active-provider	1/2	steel-chest:1, electronic-circuit:3, advanced-circuit:1
+logistic-chest-buffer	1/2	steel-chest:1, electronic-circuit:3, advanced-circuit:1
+logistic-chest-passive-provider	1/2	steel-chest:1, electronic-circuit:3, advanced-circuit:1
+logistic-chest-requester	1/2	steel-chest:1, electronic-circuit:3, advanced-circuit:1
+logistic-chest-storage	1/2	steel-chest:1, electronic-circuit:3, advanced-circuit:1
+logistic-robot	1/2	flying-robot-frame:1, advanced-circuit:2
+logistic-science-pack	6	inserter:1, transport-belt:1
+long-handed-inserter	1/2	iron-gear-wheel:1, iron-plate:1, inserter:1
+low-density-structure	20	steel-plate:2, copper-plate:20, plastic-bar:5
+lubricant	1/10	heavy-oil:1
+medium-electric-pole	1/2	iron-stick:4, steel-plate:2, copper-plate:2
+military-science-pack	5	piercing-rounds-magazine:1/2, grenade:1/2, stone-wall:1
+modular-armor	15	advanced-circuit:30, steel-plate:50
+night-vision-equipment	10	advanced-circuit:5, steel-plate:10
+nuclear-fuel	90	uranium-235:1, rocket-fuel:1
+nuclear-reactor	8	concrete:500, steel-plate:500, advanced-circuit:500, copper-plate:500
+offshore-pump	1/2	electronic-circuit:2, pipe:1, iron-gear-wheel:1
+oil-refinery	8	steel-plate:15, iron-gear-wheel:10, stone-brick:10, electronic-circuit:10, pipe:10
+personal-laser-defense-equipment	10	processing-unit:20, low-density-structure:5, laser-turret:5
+personal-roboport-equipment	10	advanced-circuit:10, iron-gear-wheel:40, steel-plate:20, battery:45
+personal-roboport-mk2-equipment	20	personal-roboport-equipment:5, processing-unit:100, low-density-structure:20
+petroleum-gas	1/9	crude-oil:20/9
+piercing-rounds-magazine	3	firearm-magazine:1, steel-plate:1, copper-plate:5
+piercing-shotgun-shell	8	shotgun-shell:2, copper-plate:5, steel-plate:2
+pipe	1/2	iron-plate:1
+pipe-to-ground	1/4	pipe:5, iron-plate:5/2
+pistol	5	copper-plate:5, iron-plate:5
+plastic-bar	1/2	petroleum-gas:10, coal:1/2
+poison-capsule	8	steel-plate:3, electronic-circuit:3, coal:10
+power-armor	20	processing-unit:40, electric-engine-unit:20, steel-plate:40
+power-armor-mk2	25	effectivity-module-2:25, speed-module-2:25, processing-unit:60, electric-engine-unit:40, low-density-structure:30
+power-switch	2	iron-plate:5, copper-cable:5, electronic-circuit:2
+processing-unit	10	electronic-circuit:20, advanced-circuit:2, sulfuric-acid:5
+production-science-pack	7	electric-furnace:1/3, productivity-module:1/3, rail:10
+productivity-module	15	advanced-circuit:5, electronic-circuit:5
+productivity-module-2	30	productivity-module:4, advanced-circuit:5, processing-unit:5
+productivity-module-3	60	productivity-module-2:5, advanced-circuit:5, processing-unit:5
+programmable-speaker	2	iron-plate:3, iron-stick:4, copper-cable:5, electronic-circuit:4
+pump	2	engine-unit:1, steel-plate:1, pipe:1
+pumpjack	5	steel-plate:5, iron-gear-wheel:10, electronic-circuit:5, pipe:10
+radar	1/2	electronic-circuit:5, iron-gear-wheel:5, iron-plate:10
+rail	1/4	stone:1/2, iron-stick:1/2, steel-plate:1/2
+rail-chain-signal	1/2	electronic-circuit:1, iron-plate:5
+rail-signal	1/2	electronic-circuit:1, iron-plate:5
+red-wire	1/2	electronic-circuit:1, copper-cable:1
+refined-concrete	3/2	concrete:2, iron-stick:4/5, steel-plate:1/10, water:10
+refined-hazard-concrete	1/40	refined-concrete:1
+repair-pack	1/2	electronic-circuit:2, iron-gear-wheel:2
+roboport	5	steel-plate:45, iron-gear-wheel:45, advanced-circuit:45
+rocket	8	electronic-circuit:1, explosives:1, iron-plate:2
+rocket-control-unit	30	processing-unit:1, speed-module:1
+rocket-fuel	30	solid-fuel:10, light-oil:10
+rocket-launcher	10	iron-plate:5, iron-gear-wheel:5, electronic-circuit:5
+rocket-part	3	rocket-control-unit:10, low-density-structure:10, rocket-fuel:10
+rocket-silo	30	steel-plate:1000, concrete:1000, pipe:100, processing-unit:200, electric-engine-unit:200
+satellite	5	low-density-structure:100, solar-panel:100, accumulator:100, radar:5, processing-unit:100, rocket-fuel:50
+shotgun	10	iron-plate:15, iron-gear-wheel:5, copper-plate:10, wood:5
+shotgun-shell	3	copper-plate:2, iron-plate:2
+slowdown-capsule	8	steel-plate:2, electronic-circuit:2, coal:5
+small-electric-pole	1/4	wood:1/2, copper-cable:1
+small-lamp	1/2	electronic-circuit:1, copper-cable:3, iron-plate:1
+solar-panel	10	steel-plate:5, electronic-circuit:15, copper-plate:5
+solar-panel-equipment	10	solar-panel:1, advanced-circuit:2, steel-plate:5
+solid-fuel	2	light-oil:10
+space-science-pack	273/800	rocket-part:1/10, satellite:1/1000
+speed-module	15	advanced-circuit:5, electronic-circuit:5
+speed-module-2	30	speed-module:4, advanced-circuit:5, processing-unit:5
+speed-module-3	60	speed-module-2:5, advanced-circuit:5, processing-unit:5
+spidertron	10	exoskeleton-equipment:4, fusion-reactor-equipment:2, rocket-launcher:4, rocket-control-unit:16, low-density-structure:150, radar:2, effectivity-module-3:2, raw-fish:1
+spidertron-remote	1/2	rocket-control-unit:1, radar:1
+splitter	1	electronic-circuit:5, iron-plate:5, transport-belt:4
+stack-filter-inserter	1/2	stack-inserter:1, electronic-circuit:5
+stack-inserter	1/2	iron-gear-wheel:15, electronic-circuit:15, advanced-circuit:1, fast-inserter:1
+steam-engine	1/2	iron-gear-wheel:8, pipe:5, iron-plate:10
+steam-turbine	3	iron-gear-wheel:50, copper-plate:50, pipe:20
+steel-chest	1/2	steel-plate:8
+steel-furnace	3	steel-plate:6, stone-brick:10
+steel-plate	16	iron-plate:5
+stone-brick	16/5	stone:2
+stone-furnace	1/2	stone:5
+stone-wall	1/2	stone-brick:5
+storage-tank	3	iron-plate:20, steel-plate:5
+submachine-gun	10	iron-gear-wheel:10, copper-plate:5, iron-plate:10
+substation	1/2	steel-plate:10, advanced-circuit:5, copper-plate:5
+sulfur	1/2	water:15, petroleum-gas:15
+sulfuric-acid	1/50	sulfur:1/10, iron-plate:1/50, water:2
+tank	5	engine-unit:32, steel-plate:50, iron-gear-wheel:15, advanced-circuit:10
+train-stop	1/2	electronic-circuit:5, iron-plate:6, iron-stick:6, steel-plate:3
+transport-belt	1/4	iron-plate:1/2, iron-gear-wheel:1/2
+underground-belt	1/2	iron-plate:5, transport-belt:5/2
+uranium-238	20	used-up-uranium-fuel-cell:5/3
+uranium-cannon-shell	12	cannon-shell:1, uranium-238:1
+uranium-fuel-cell	1	iron-plate:1, uranium-235:1/10, uranium-238:19/10
+uranium-rounds-magazine	10	piercing-rounds-magazine:1, uranium-238:1
+utility-science-pack	7	low-density-structure:1, processing-unit:2/3, flying-robot-frame:1/3
+wooden-chest	1/2	wood:2

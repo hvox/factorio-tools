@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+import clipboard
+
+from factorio.blueprints import Blueprint
+
+
+def try_call(f):
+    try:
+        return f()
+    except Exception:
+        return None
+
+
+def print_json_representation(code: str):
+    import base64
+    import json
+    import zlib
+
+    compressed = base64.b64decode(code[1:])
+    decoded = json.loads(zlib.decompress(compressed).decode())
+    print(decoded)
+
+
+original_code = clipboard.paste()
+print_json_representation(original_code)
+blueprint = Blueprint.decode(original_code)
+print(blueprint)
+new_code = blueprint.encode()
+print(f"old code: {len(original_code)} characters")
+print(f"new code: {len(new_code)} characters")
+clipboard.copy(new_code)
+print("New code has been copied to your clipboard")

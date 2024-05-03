@@ -1,0 +1,219 @@
+#!/usr/bin/env python3
+"""
+Show step-by-step guide how to make factory for something.
+
+Usage: {script} [options] MATERIALS
+
+Arguments:
+    MATERIALS - Materials to be produced separated by comma.
+
+Options:
+    -h, --help
+        Show this screen and exit.
+"""
+import sys
+from difflib import get_close_matches
+import math
+from collections import defaultdict
+from contextlib import suppress
+from pathlib import Path
+from fractions import Fraction
+
+from materials_61774 import Material
+
+MATERIALS = Material.load_materials()
+COAL, IRON, COPPER, PLASTIC, GREEN, RED, BLUE = Material.load_the_boys()
+COLLECTIONS = {
+    "science-packs": {
+        "automation-science-pack": Fraction(1),
+        "logistic-science-pack": Fraction(1),
+        "chemical-science-pack": Fraction(1),
+        "military-science-pack": Fraction(1),
+        "production-science-pack": Fraction(1),
+        "utility-science-pack": Fraction(1),
+        # 1000 science-pack = 1 satellite + 100 rocket-part
+        "satellite": Fraction(1, 1000),
+        "rocket-part": Fraction(100, 1000) * 10 / 14,
+        # P.S. I can make productivity modules by hand if it comes to that!
+    },
+    "science-packs-for-artillery": {
+        "automation-science-pack": Fraction(1),
+        "logistic-science-pack": Fraction(1),
+        "chemical-science-pack": Fraction(1),
+        "military-science-pack": Fraction(1),
+        # "production-science-pack": Fraction(1),
+        "utility-science-pack": Fraction(1),
+        "satellite": Fraction(1, 1000),
+        "rocket-part": Fraction(100, 1000) * 10 / 14,
+    },
+    "science-packs-for-drones": {
+        "automation-science-pack": Fraction(1),
+        "logistic-science-pack": Fraction(1),
+        "chemical-science-pack": Fraction(1),
+        # "military-science-pack": Fraction(1),
+        "production-science-pack": Fraction(1),
+        "utility-science-pack": Fraction(1),
+        "satellite": Fraction(1, 1000),
+        "rocket-part": Fraction(100, 1000) * 10 / 14,
+    },
+    "rocket-silo-research": {
+        "automation-science-pack": Fraction(5750),
+        "logistic-science-pack": Fraction(5565),
+        "chemical-science-pack": Fraction(3650),
+        "production-science-pack": Fraction(1600),
+        "utility-science-pack": Fraction(1300),
+    },
+    "rocket-launcher-2022": {
+        "transport-belt": 22500,
+        "fast-transport-belt": 8500,
+        "inserter": 9000,
+        "small-electric-pole": 3600,
+        "steel-furnace": 2600,
+        "pipe": 2500,
+        "pipe-to-ground": 2100,
+        "assembling-machine-2": 2100,
+        "fast-inserter": 1800,
+        "underground-belt": 1200,
+        "fast-underground-belt": 1200,
+        "long-handed-inserter": 988,
+        "big-electric-pole": 400,
+        "assembling-machine-1": 318,
+        "splitter": 289,
+        "fast-splitter": 275,
+        "chemical-plant": 259,
+        "electric-furnace": 144,
+        "oil-refinery": 101,
+        "lab": 99,
+        "pump": 8,
+        "beacon": 4,
+        "filter-inserter": 2,
+        "stack-inserter": 2,
+        "substation": 2,
+        "steel-chest": 1,
+        # Roboport network
+        "radar": 25,
+        "roboport": 100,
+        "logistic-chest-storage": 400,
+        "construction-robot": 5000,
+        # P.S. The silo itself is made by hand from intermediate materials.
+    },
+}
+ONSITE_MATERIALS = set(MATERIALS) - {
+    "iron-ore",
+    "iron-plate",
+    "copper-ore",
+    "copper-plate",
+    "electronic-circuit",
+    "water",
+    "coal",
+    "crude-oil",
+    "petroleum-gas",
+    "steel-plate",
+    "plastic-bar",
+    "sulfur",
+    "engine-unit",
+    "advanced-circuit",
+    "chemical-science-pack",
+    "stone",
+    "stone-brick",
+    "military-science-pack",
+    "production-science-pack",
+    "heavy-oil",
+    "low-density-structure",
+    "battery",
+    "processing-unit",
+    "utility-science-pack",
+    "light-oil",
+    "satellite",
+    "rocket-part",
+}
+# ONSITE_MATERIALS = {"copper-cable", "pipe", "iron-gear-wheel"}
+
+
+def show_plan(targets: dict[str, Fraction]):
+    targets = dict_sum(
+        {mat: ingr_ipm * ipm for mat, ingr_ipm in COLLECTIONS[target].items()}
+        if target in COLLECTIONS
+        else {target: ipm}
+        for target, ipm in targets.items()
+    )
+    total = dict_sum(MATERIALS[mat].total_cost(ipm) for mat, ipm in targets.items())
+    for onsite_material in ONSITE_MATERIALS - set(targets):
+        total.pop(MATERIALS[onsite_material], None)
+    current_wares = {}
+    for material, amount in total.items():
+        amount_str = math.ceil(10 * amount) / 10 if amount % 1 else int(amount)
+        line = f"{float(amount/material.items_per_lane):9.2f} {material.name:23} IPM={amount_str}"
+        if material:
+            buildings = math.ceil(amount / 60 * material.buildings * 10) / 10
+            buildings = int(buildings) if buildings % 1 == 0 else buildings
+            suffix = f" [{buildings}]"
+            ingredients = defaultdict(Fraction)
+            ingredients.update(material.ingredients.items())
+            while any(mat in ingredients for mat in ONSITE_MATERIALS):
+                for mat in ingredients:
+                    if mat not in ONSITE_MATERIALS:
+                        continue
+                    ipm = ingredients.pop(mat)
+                    for ingr, ingr_ipm in MATERIALS[mat].ingredients.items():
+                        ingredients[ingr] += ingr_ipm * ipm
+                    break
+            suffix += " <- " + ", ".join(
+                f"\x1b[{MATERIALS[ingr].color}m{ingr}:{float(amount*x):.1f}\x1b[0m" for ingr, x in ingredients.items()
+            )
+        else:
+            suffix = "\x1b[0m <- source"
+        line += " " * (43 - len(line)) + suffix
+        print(f"\x1b[{material.color}m" + line + "\x1b[0m")
+        current_wares = dict_substract(
+            current_wares, {MATERIALS[i]: x * amount for i, x in (ingredients.items() if material else ())}
+        )
+        current_wares = {i: x for i, x in current_wares.items() if x}
+        for mat, x in current_wares.items():
+            print(f"{float(x/mat.items_per_lane):3.2f} \x1b[{mat.color}m{mat.name:23}\x1b[0m IPM={math.ceil(x)}")
+        input()
+        print(f"\x1b[{len(current_wares) + 1}A\x1b[0J", end="")
+        current_wares = dict_sum(
+            current_wares, {material: amount if material.name not in targets else (amount - targets[material.name])}
+        )
+    print()
+
+
+def main(script_name: str, *script_args: str):
+    doc = __doc__.format(script=Path(script_name).name)
+    args = __import__("docopt").docopt(doc, script_args)
+    available_targets = list(MATERIALS) + list(COLLECTIONS)
+    targets = {
+        target.strip(): Fraction((x + ["1"])[0].strip())
+        for target, *x in (s.strip().split(":") for s in args["MATERIALS"].split(","))
+    }
+    for target in targets:
+        if target not in available_targets:
+            print(f"\x1b[91mERROR:\x1b[0m I have no idea what \x1b[91m{target}\x1b[0m is!")
+            prefixes = ["Did you mean", "or maybe", "or"]
+            for i, suggestion in enumerate(get_close_matches(target, available_targets, 3, 0.5)):
+                print(f"       {prefixes[i]} \x1b[92m{suggestion}\x1b[0m?")
+            exit(1)
+    show_plan(targets)
+
+
+def dict_sum(*dicts):
+    if len(dicts) == 1 and not hasattr(dicts[0], "items"):
+        dicts = dicts[0]
+    total = {}
+    for dict in dicts:
+        for key, value in dict.items():
+            total[key] = value if key not in total else total[key] + value
+    return total
+
+
+def dict_substract(dict1, dict2):
+    total = dict(dict1)
+    for key, value in dict2.items():
+        total[key] -= value
+    return total
+
+
+if __name__ == "__main__":
+    with suppress(KeyboardInterrupt):
+        main(sys.argv[0], *sys.argv[1:])
