@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+from PIL import Image
+from copy import deepcopy
+import sys
+import clipboard
+
+
+TEMPLATE = {
+    "blueprint": {
+        "entities": [
+            {"name": "stone-wall", "entity_number": 1, "position": {"x": 0.5, "y": 0.5}},
+        ]
+    }
+}
+
+
+def pack_blueprint(blueprint: dict):
+    from zlib import compress
+    from json import dumps
+    from base64 import b64encode
+
+    return "0" + b64encode(compress(dumps(blueprint).encode())).decode()
+
+
+img = Image.open(sys.argv[1]).convert("1")
+pixels = img.load()
+blueprint = deepcopy(TEMPLATE)
+entity_number = 0
+for y in range(img.height):
+    for x in range(img.width):
+        if pixels[x, y] == 0:
+            continue
+        entity_number += 1
+        blueprint["blueprint"]["entities"].append(
+            {"name": "stone-wall", "entity_number": entity_number, "position": {"x": x + 0.5, "y": y + 0.5}}
+        )
+
+clipboard.copy(pack_blueprint(blueprint))
+print("New code has been copied to your clipboard")
