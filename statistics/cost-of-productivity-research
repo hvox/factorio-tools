@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+"""
+Calculate cost of productivity research and its bonus
+
+Usage: {script} [options]
+
+Options:
+    -h, --help
+        Show this screen and exit.
+"""
+import sys
+from contextlib import suppress
+from pathlib import Path
+
+
+def main(script_name: str, *script_args: str):
+    doc = __doc__.format(script=Path(script_name).name)
+    __import__("docopt").docopt(doc, script_args)
+
+    for level in range(1, 2**23 + 1):
+        cost, bonus = level_cost_and_bonus(level)
+        if bin(level).count("1") == 1:
+            print(f"{cost=:07.2f} lvl={level}")
+
+
+def level_cost_and_bonus(level: int):
+    used_productivity_bonus = 1.0 + 0.1 * (level - 1)
+    aquireed_productivity_bonus = used_productivity_bonus + 0.1
+    research_cost = 1000 * level / used_productivity_bonus
+    return research_cost, aquireed_productivity_bonus
+
+
+if __name__ == "__main__":
+    with suppress(KeyboardInterrupt):
+        main(sys.argv[0], *sys.argv[1:])
