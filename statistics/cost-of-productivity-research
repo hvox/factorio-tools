@@ -2,7 +2,11 @@
 """
 Calculate cost of productivity research and its bonus
 
-Usage: {script} [options]
+Usage: {script} [options] [ORES]
+
+Arguments:
+    ORES - Amount of coal available for research.
+           (assumes usage of coal for oil production)
 
 Options:
     -h, --help
@@ -11,16 +15,31 @@ Options:
 import sys
 from contextlib import suppress
 from pathlib import Path
+from math import inf
+
+
+LAB_PRODUCTIVITY = 1.12
+ROCKET_COST = 814.325
 
 
 def main(script_name: str, *script_args: str):
     doc = __doc__.format(script=Path(script_name).name)
-    __import__("docopt").docopt(doc, script_args)
+    args = __import__("docopt").docopt(doc, script_args)
+    resources = int(eval(args["ORES"])) if args["ORES"] is not None else inf
 
+    max_rockets = resources / ROCKET_COST
+    cost_per_science_pack = 15 / LAB_PRODUCTIVITY
+    msg = f"rockets={max_rockets:.0f}"
     for level in range(1, 2**23 + 1):
         cost, bonus = level_cost_and_bonus(level)
-        if bin(level).count("1") == 1:
-            print(f"{cost=:07.2f} lvl={level}")
+        resources -= cost * cost_per_science_pack
+        rockets = resources * bonus / ROCKET_COST
+        max_rockets = max(max_rockets, rockets)
+        if bin(level - 1).count("1") == 1 or rockets < max_rockets:
+            print(msg)
+        msg = f"{cost=:07.2f}" + (f" {rockets=:.0f}" if resources != inf else "") + f" lvl={level}"
+        if rockets < max_rockets:
+            break
 
 
 def level_cost_and_bonus(level: int):
