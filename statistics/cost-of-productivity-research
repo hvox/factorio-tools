@@ -35,7 +35,7 @@ def main(script_name: str, *script_args: str):
         resources -= cost * cost_per_science_pack
         rockets = resources * bonus / ROCKET_COST
         max_rockets = max(max_rockets, rockets)
-        if bin(level - 1).count("1") == 1 or rockets < max_rockets:
+        if level == 1 or bin(level - 1).count("1") == 1 or rockets < max_rockets:
             print(msg)
         msg = f"{cost=:07.2f}" + (f" {rockets=:.0f}" if resources != inf else "") + f" lvl={level}"
         if rockets < max_rockets:
