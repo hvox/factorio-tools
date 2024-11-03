@@ -1,0 +1,230 @@
+#!/usr/bin/env python3
+"""
+Generate number display
+
+Usage: {script} [options]
+
+Options:
+    -l, --length=L
+        Number of digits in the display.
+        [default: 6]
+    -h, --help
+        Show this screen and exit.
+"""
+import base64
+import contextlib
+import json
+import subprocess
+import sys
+import zlib
+from base64 import b64encode
+from contextlib import suppress
+from math import inf
+from pathlib import Path
+
+
+def main(script_name: str, *script_args: str):
+    doc = __doc__.format(script=Path(script_name).name)
+    args = __import__("docopt").docopt(doc, script_args)
+    size = int(args["--length"])
+    push_blueprint(generate_the_thing(size))
+
+
+def generate_the_thing(size: int):
+    max_value = 10**size - 1
+    if max_value > 2**31 - 1:
+        max_value = inf
+    entities = []
+    entities.append(
+        {
+            "entity_number": len(entities) + 1,
+            "name": "display-panel",
+            "position": {"x": 27.5, "y": 0.5},
+            "direction": 8,
+            "control_behavior": {
+                "parameters": [
+                    {
+                        "condition": {
+                            "first_signal": {"type": "virtual", "name": "signal-check"},
+                            "constant": 0,
+                            "comparator": ">=",
+                        },
+                        "icon": {"name": "parameter-0"},
+                    }
+                ]
+            },
+        }
+    )
+    for i in range(min(size, 10)):
+        display_panel = {
+            "entity_number": len(entities) + 1,
+            "name": "display-panel",
+            "position": {"x": 27.5 - i - 1, "y": 0.5},
+            "direction": 8,
+            "control_behavior": {
+                "parameters": [
+                    {
+                        "condition": {
+                            "first_signal": {"type": "virtual", "name": "signal-dot"},
+                            "constant": 10**i,
+                            "comparator": "<",
+                        }
+                    }
+                ]
+                * (i != 0)
+                + [
+                    {
+                        "condition": {
+                            "first_signal": {"type": "virtual", "name": "signal-dot"},
+                            "constant": max_value,
+                            "comparator": ">",
+                        },
+                        "icon": {"type": "virtual", "name": "signal-9"},
+                    }
+                ]
+                * (max_value != inf)
+                + [
+                    {
+                        "condition": {
+                            "first_signal": {"type": "virtual", "name": f"signal-{i}"},
+                            "constant": digit,
+                            "comparator": "=",
+                        },
+                        "icon": {"type": "virtual", "name": f"signal-{digit}"},
+                    }
+                    for digit in range(10)
+                ],
+            },
+        }
+        entities.append(display_panel)
+    entities.append(
+        {
+            "entity_number": len(entities) + 1,
+            "name": "constant-combinator",
+            "position": {"x": 21.5, "y": 1.5},
+            "direction": 4,
+            "control_behavior": {
+                "sections": {
+                    "sections": [
+                        {
+                            "index": 1,
+                            "filters": [
+                                {
+                                    "index": i + 1,
+                                    "type": "virtual",
+                                    "name": f"signal-{i}",
+                                    "quality": "normal",
+                                    "comparator": "=",
+                                    "count": 10**i,
+                                }
+                                for i in range(10)
+                            ],
+                        }
+                    ]
+                }
+            },
+        }
+    )
+    combinator_id = len(entities)
+    entities.append(
+        {
+            "entity_number": len(entities) + 1,
+            "name": "arithmetic-combinator",
+            "position": {"x": 23, "y": 1.5},
+            "direction": 4,
+            "control_behavior": {
+                "arithmetic_conditions": {
+                    "first_signal": {"name": "parameter-0"},
+                    "second_signal": {"type": "virtual", "name": "signal-each"},
+                    "operation": "/",
+                    "output_signal": {"type": "virtual", "name": "signal-each"},
+                }
+            },
+        },
+    )
+    entities.append(
+        {
+            "entity_number": len(entities) + 1,
+            "name": "arithmetic-combinator",
+            "position": {"x": 25, "y": 1.5},
+            "direction": 4,
+            "control_behavior": {
+                "arithmetic_conditions": {
+                    "first_signal": {"type": "virtual", "name": "signal-each"},
+                    "second_constant": 10,
+                    "operation": "%",
+                    "output_signal": {"type": "virtual", "name": "signal-each"},
+                }
+            },
+        },
+    )
+    entities.append(
+        {
+            "entity_number": len(entities) + 1,
+            "name": "arithmetic-combinator",
+            "position": {"x": 27, "y": 1.5},
+            "direction": 4,
+            "control_behavior": {
+                "arithmetic_conditions": {
+                    "first_signal": {"type": "virtual", "name": "signal-0"},
+                    "second_constant": 0,
+                    "operation": "+",
+                    "output_signal": {"type": "virtual", "name": "signal-dot"},
+                }
+            },
+        },
+    )
+    return {
+        "icons": [
+            {"signal": {"type": "virtual", "name": "signal-0"}, "index": 1},
+            {"signal": {"type": "virtual", "name": "signal-7"}, "index": 2},
+        ],
+        "entities": entities,
+        "wires": [
+            *([i, 2, i + 1, 2] for i in range(1, size + 1)),
+            [combinator_id, 2, combinator_id + 1, 2],
+            [combinator_id + 1, 4, combinator_id + 2, 2],
+            [combinator_id + 1, 4, combinator_id + 3, 2],
+            [combinator_id + 2, 4, combinator_id + 3, 4],
+            [combinator_id + 3, 4, 1, 2],
+        ],
+        "parameters": [
+            {
+                "type": "id",
+                "name": "Number to display",
+                "id": "parameter-0",
+                "quality-condition": {"quality": "normal", "comparator": "="},
+            }
+        ],
+        "item": "blueprint",
+    }
+
+
+def push_blueprint(blueprint):
+    if "blueprint" not in blueprint:
+        blueprint = {"blueprint": blueprint}
+    compressed = zlib.compress(json.dumps(blueprint).encode(), 9)
+    encoded = "0" + base64.b64encode(compressed).decode()
+    copy_to_clipboard(encoded)
+
+
+def copy_to_clipboard(message: str, stdout=sys.stdout):
+    with contextlib.suppress(ImportError):
+        table = __import__("pandas").DataFrame([message])
+        table.to_clipboard(excel=False, index=False, header=False)
+        return
+    with contextlib.suppress(OSError):
+        cmd = ["/usr/bin/xsel", "-ib"]
+        subprocess.run(cmd, check=True, input=message.encode("utf-8"))
+        return
+    if stdout.isatty():
+        encoded = b64encode(message.encode("utf-8")).decode("ascii")
+        print(f"\x1b]52;c;{encoded}\x07", file=stdout)
+        return
+    print("Copy this please:\n" + message, file=stdout)
+    input()
+
+
+if __name__ == "__main__":
+    with suppress(KeyboardInterrupt):
+        main(sys.argv[0], *sys.argv[1:])
