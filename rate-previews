@@ -1,0 +1,16 @@
+#!/bin/sh -e
+
+
+script_dir=$(dirname "$(realpath $0)")
+cd $script_dir/rate-enemy-flow.src
+cargo build --release
+cp target/release/factorio-map-processor ../rate-enemy-flow
+cd ..
+
+for map in ./previews/*.png; do
+	seed=$(basename "$map")
+	flow=$(./rate-enemy-flow "$map" currently-rated-map.png)
+	mv currently-rated-map.png "rated-previews/$flow-$seed"
+	echo $map - $flow
+done
+wait
